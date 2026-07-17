@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ingersoll Area Hair Salon Pricing Dashboard</title>
+  <style>
+    :root {
+      --ink: #1f2328;
+      --muted: #64707d;
+      --line: #dbe2e8;
+      --paper: #fbfcf7;
+      --panel: #ffffff;
+      --sage: #6a8f7b;
+      --rose: #bd6d77;
+      --gold: #c49343;
+      --teal: #487f8f;
+      --plum: #7e668f;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.45;
+    }
+
+    header {
+      padding: 32px clamp(18px, 4vw, 56px) 22px;
+      border-bottom: 1px solid var(--line);
+      background: #f4f0e8;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.8rem, 4vw, 3.2rem);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: 1.12rem;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      letter-spacing: 0;
+    }
+
+    .subhead {
+      max-width: 920px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    main {
+      padding: 24px clamp(18px, 4vw, 56px) 44px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .metric {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 1.75rem;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .chart {
+      display: grid;
+      gap: 10px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: minmax(128px, 1fr) minmax(150px, 2.2fr) 78px;
+      gap: 10px;
+      align-items: center;
+      min-height: 30px;
+    }
+
+    .label {
+      font-size: 0.86rem;
+      color: #29313a;
+      overflow-wrap: anywhere;
+    }
+
+    .track {
+      height: 16px;
+      border-radius: 999px;
+      background: #e9eef0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .fill {
+      height: 100%;
+      border-radius: inherit;
+      min-width: 2px;
+    }
+
+    .value {
+      color: var(--muted);
+      font-size: 0.84rem;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .summary-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .insight {
+      border-left: 4px solid var(--sage);
+      padding: 8px 0 8px 12px;
+      color: #303842;
+    }
+
+    .insight small {
+      display: block;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+    }
+
+    th, td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f5f7f3;
+      font-size: 0.78rem;
+      color: #4d5965;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    a { color: #245f73; }
+
+    .note {
+      color: var(--muted);
+      font-size: 0.84rem;
+      margin: 12px 0 0;
+    }
+
+    @media (max-width: 900px) {
+      .metrics,
+      .grid,
+      .service-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .bar-row {
+        grid-template-columns: minmax(100px, 1fr) minmax(120px, 1.7fr) 64px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Hair Salon Pricing Around Ingersoll</h1>
+    <p class="subhead">A visual read on 10 salons within roughly 60 km, using public pricing collected May 16, 2026. Bars use the lowest published starting price or low end of a range, so premium add-ons, product surcharges, taxes, and stylist-level differences can raise the final ticket.</p>
+  </header>
+
+  <main>
+    <section class="metrics" aria-label="Market overview">
+      <div class="metric"><strong>10</strong><span>priced competitors</span></div>
+      <div class="metric"><strong>$32-$48+</strong><span>closest local cut band</span></div>
+      <div class="metric"><strong>$60-$80</strong><span>nearby full-colour band</span></div>
+      <div class="metric"><strong>$180-$250+</strong><span>common balayage range</span></div>
+    </section>
+
+    <section class="grid">
+      <div>
+        <div class="panel">
+          <h2>Competitor Price Position: Women's Cut</h2>
+          <div id="cutChart" class="chart"></div>
+          <p class="note">The Beauty Academy is shown separately in context as a student salon, which can pull the low end down sharply.</p>
+        </div>
+
+        <div class="panel">
+          <h2>Core Colour Services</h2>
+          <div class="service-grid">
+            <div>
+              <h3>Full Colour</h3>
+              <div id="fullColourChart" class="chart"></div>
+            </div>
+            <div>
+              <h3>Full Highlights / Full Foils</h3>
+              <div id="fullHighlightsChart" class="chart"></div>
+            </div>
+            <div>
+              <h3>Balayage / Ombre</h3>
+              <div id="balayageChart" class="chart"></div>
+            </div>
+            <div>
+              <h3>Root Colour</h3>
+              <div id="rootChart" class="chart"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Distance vs. Price Snapshot</h2>
+          <div id="distanceChart" class="chart"></div>
+          <p class="note">This shows distance from Ingersoll against women's cut starting price. London offers wider specialization, while Woodstock/Tillsonburg are the tightest direct local benchmarks.</p>
+        </div>
+      </div>
+
+      <aside>
+        <div class="panel">
+          <h2>Market Signals</h2>
+          <div class="summary-list">
+            <div class="insight">Woodstock and Tillsonburg define the local value floor.<small>Sidestreet, Hairpower, and Tranquility sit well below many London salons.</small></div>
+            <div class="insight">London pricing supports premium positioning.<small>Specialty services, textured hair, blonding, and head spa services can justify higher prices.</small></div>
+            <div class="insight">A strong Ingersoll menu could live in the middle.<small>Suggested cut target: $45-$55+. Suggested balayage target: $180-$225+.</small></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>City Coverage</h2>
+          <div id="cityChart" class="chart"></div>
+          <div class="legend">
+            <span class="legend-item"><span class="swatch" style="background: var(--sage)"></span>Nearby local</span>
+            <span class="legend-item"><span class="swatch" style="background: var(--teal)"></span>London</span>
+            <span class="legend-item"><span class="swatch" style="background: var(--gold)"></span>Outer radius</span>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="panel">
+      <h2>Competitor Database View</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Business</th>
+            <th>City</th>
+            <th>Km</th>
+            <th>Women's Cut</th>
+            <th>Full Colour</th>
+            <th>Full Highlights</th>
+            <th>Balayage</th>
+            <th>Source</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    const salons = [
+      { name: "Tranquility Spa + Salon", city: "Tillsonburg", group: "local", km: 30, cut: 40, root: 55, fullColour: 65, fullHighlights: 120, balayage: null, cutText: "$40+", fullColourText: "$65+", fullHighlightsText: "$120+", balayageText: "", url: "https://www.tranquilitytillsonburg.ca/hair-services" },
+      { name: "Hairpower", city: "Woodstock", group: "local", km: 18, cut: 48, root: null, fullColour: 60, fullHighlights: 135, balayage: null, cutText: "$48+", fullColourText: "$60-$80", fullHighlightsText: "$135+", balayageText: "Consult", url: "https://www.hairpoweroxford.ca/services" },
+      { name: "Sidestreet Salon", city: "Woodstock", group: "local", km: 18, cut: 32, root: 62, fullColour: 73, fullHighlights: 79, balayage: null, cutText: "$32", fullColourText: "$73", fullHighlightsText: "$79-$101", balayageText: "", url: "https://www.allbiz.ca/sidestreet-salon_26-519-290-1024" },
+      { name: "Essense Salon & Sanctuary", city: "London", group: "london", km: 35, cut: 55, root: 70, fullColour: 100, fullHighlights: 90, balayage: 180, cutText: "$55-$80+", fullColourText: "$100-$135+", fullHighlightsText: "$90-$110+", balayageText: "$180-$210+", url: "https://essensesalon.com/designer-service-menu/" },
+      { name: "The Beauty Academy", city: "London", group: "london", km: 37, cut: 16.5, root: 60, fullColour: null, fullHighlights: 80, balayage: null, cutText: "$16.50", fullColourText: "", fullHighlightsText: "$80+", balayageText: "", url: "https://beautyacademy.ca/salon-services/" },
+      { name: "Luksa Hair", city: "London", group: "london", km: 39, cut: 65, root: 90, fullColour: 130, fullHighlights: 200, balayage: 200, cutText: "$65", fullColourText: "$130+", fullHighlightsText: "$200+", balayageText: "$200+", url: "https://luksa.ca/" },
+      { name: "Davida's Beauty Hair Salon", city: "London", group: "london", km: 42, cut: 35, root: 60, fullColour: 80, fullHighlights: 90, balayage: 120, cutText: "$35-$60", fullColourText: "$80-$150+", fullHighlightsText: "$90-$200+", balayageText: "$120-$250+", url: "https://www.davidasbeautyhairsalon.com/pricing-list" },
+      { name: "Mane Obsession Salon", city: "London", group: "london", km: 39, cut: 52.5, root: 127.5, fullColour: null, fullHighlights: 158, balayage: 210, cutText: "$52.50-$70", fullColourText: "", fullHighlightsText: "$158-$193", balayageText: "$210+", url: "https://www.maneobsessionsalon.com/" },
+      { name: "Cedarhurst Salon & Spa", city: "St Thomas", group: "outer", km: 55, cut: 49.5, root: null, fullColour: 102, fullHighlights: 175, balayage: 250, cutText: "$49.50-$76.50", fullColourText: "$102+", fullHighlightsText: "$175+", balayageText: "$250+", url: "https://www.cedarhurstsalonandspa.com/salon-services" },
+      { name: "Salon 5010", city: "Stratford", group: "outer", km: 58, cut: 45, root: 120, fullColour: 130, fullHighlights: 150, balayage: null, cutText: "$45-$65+", fullColourText: "$130-$150+", fullHighlightsText: "$150-$170+", balayageText: "", url: "https://www.salon5010.ca/" }
+    ];
+
+    const colours = {
+      local: "var(--sage)",
+      london: "var(--teal)",
+      outer: "var(--gold)",
+      rose: "var(--rose)",
+      plum: "var(--plum)"
+    };
+
+    function groupColour(item) {
+      return colours[item.group] || colours.plum;
+    }
+
+    function money(value) {
+      return value == null ? "" : "$" + value.toString().replace(".5", ".50");
+    }
+
+    function renderBarChart(id, key, max, textKey) {
+      const target = document.getElementById(id);
+      const rows = salons
+        .filter(item => item[key] !== null)
+        .sort((a, b) => a[key] - b[key]);
+      target.innerHTML = rows.map(item => {
+        const width = Math.max(3, Math.round((item[key] / max) * 100));
+        const label = textKey ? item[textKey] : money(item[key]);
+        return `
+          <div class="bar-row">
+            <div class="label">${item.name}</div>
+            <div class="track"><div class="fill" style="width:${width}%; background:${groupColour(item)}"></div></div>
+            <div class="value">${label}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderDistanceChart() {
+      const target = document.getElementById("distanceChart");
+      const maxCut = 80;
+      target.innerHTML = salons
+        .filter(item => item.cut !== null)
+        .sort((a, b) => a.km - b.km || a.cut - b.cut)
+        .map(item => {
+          const priceWidth = Math.round((item.cut / maxCut) * 100);
+          return `
+            <div class="bar-row">
+              <div class="label">${item.name}<br><span style="color:var(--muted)">${item.city}, ${item.km} km</span></div>
+              <div class="track"><div class="fill" style="width:${priceWidth}%; background:${groupColour(item)}"></div></div>
+              <div class="value">${item.cutText}</div>
+            </div>
+          `;
+        }).join("");
+    }
+
+    function renderCityChart() {
+      const counts = salons.reduce((acc, item) => {
+        acc[item.city] = (acc[item.city] || 0) + 1;
+        return acc;
+      }, {});
+      const max = Math.max(...Object.values(counts));
+      document.getElementById("cityChart").innerHTML = Object.entries(counts)
+        .sort((a, b) => b[1] - a[1])
+        .map(([city, count]) => {
+          const first = salons.find(item => item.city === city);
+          return `
+            <div class="bar-row">
+              <div class="label">${city}</div>
+              <div class="track"><div class="fill" style="width:${Math.round((count / max) * 100)}%; background:${groupColour(first)}"></div></div>
+              <div class="value">${count}</div>
+            </div>
+          `;
+        }).join("");
+    }
+
+    function renderTable() {
+      document.getElementById("tableBody").innerHTML = salons
+        .sort((a, b) => a.km - b.km || a.name.localeCompare(b.name))
+        .map(item => `
+          <tr>
+            <td>${item.name}</td>
+            <td>${item.city}</td>
+            <td>${item.km}</td>
+            <td>${item.cutText}</td>
+            <td>${item.fullColourText}</td>
+            <td>${item.fullHighlightsText}</td>
+            <td>${item.balayageText}</td>
+            <td><a href="${item.url}">View</a></td>
+          </tr>
+        `).join("");
+    }
+
+    renderBarChart("cutChart", "cut", 80, "cutText");
+    renderBarChart("fullColourChart", "fullColour", 150, "fullColourText");
+    renderBarChart("fullHighlightsChart", "fullHighlights", 210, "fullHighlightsText");
+    renderBarChart("balayageChart", "balayage", 260, "balayageText");
+    renderBarChart("rootChart", "root", 130, null);
+    renderDistanceChart();
+    renderCityChart();
+    renderTable();
+  </script>
+</body>
+</html>

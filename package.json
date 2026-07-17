@@ -1,0 +1,25 @@
+{
+  "name": "topknotstudios-ca",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "build:sites": "vite build && node scripts/prepare-sites-build.mjs",
+    "preview": "vite preview --host 127.0.0.1",
+    "deploy": "npx --yes vercel@56.3.1 --prod",
+    "deploy:preview": "npx --yes vercel@56.3.1"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^5.0.0",
+    "lucide-react": "^0.468.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "typescript": "^5.8.3",
+    "vite": "^7.0.6"
+  },
+  "devDependencies": {
+    "playwright": "^1.61.1"
+  }
+}

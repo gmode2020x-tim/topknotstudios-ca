@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Top Knot Studios Website Interfaces</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+    <script src="./script.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Top Knot Studios</p>
+        <h1>Five Website Interface Directions</h1>
+      </div>
+      <div class="top-actions">
+        <button class="icon-button" title="Previous concept" data-prev><i data-lucide="chevron-left"></i></button>
+        <button class="icon-button" title="Next concept" data-next><i data-lucide="chevron-right"></i></button>
+      </div>
+    </header>
+
+    <nav class="concept-tabs" aria-label="Interface concepts">
+      <button class="tab active" data-target="concept-1">1. Soft Studio</button>
+      <button class="tab" data-target="concept-2">2. Fast Booking</button>
+      <button class="tab" data-target="concept-3">3. Owner Console</button>
+      <button class="tab" data-target="concept-4">4. Luxe Portfolio</button>
+      <button class="tab" data-target="concept-5">5. Family Friendly</button>
+      <button class="tab chosen-tab" data-target="concept-6">Chosen Direction</button>
+    </nav>
+
+    <main>
+      <section class="concept active" id="concept-1">
+        <div class="hero soft">
+          <div class="hero-copy">
+            <span class="pill">Home hair salon in Ingersoll</span>
+            <h2>Soft Studio</h2>
+            <p>Warm, calm, and personal. This direction sells trust first, then gently guides visitors into choosing a service and requesting a time.</p>
+            <div class="hero-actions">
+              <button><i data-lucide="calendar-plus"></i>Request a time</button>
+              <button class="secondary"><i data-lucide="scissors"></i>View services</button>
+            </div>
+          </div>
+          <aside class="booking-panel">
+            <h3>Request appointment</h3>
+            <label>Service
+              <select>
+                <option>Cut + style, 60 min</option>
+                <option>Root touch-up, 90 min</option>
+                <option>Full color, 150 min</option>
+              </select>
+            </label>
+            <label>Preferred day
+              <input type="date" value="2026-05-20" />
+            </label>
+            <div class="slot-grid">
+              <button>10:00</button>
+              <button>12:30</button>
+              <button>3:00</button>
+            </div>
+          </aside>
+        </div>
+        <div class="section-grid">
+          <article class="service-card"><span>01</span><h3>Cuts</h3><p>Quiet one-on-one appointments with wash, cut, and finish.</p></article>
+          <article class="service-card"><span>02</span><h3>Color</h3><p>Root refreshes, glossing, dimensional color, and maintenance.</p></article>
+          <article class="service-card"><span>03</span><h3>Styling</h3><p>Blowouts, curls, event polish, and photo-ready finishing.</p></article>
+        </div>
+      </section>
+
+      <section class="concept" id="concept-2">
+        <div class="app-shell">
+          <aside class="phone-preview">
+            <div class="phone-photo"></div>
+            <h2>Fast Booking</h2>
+            <p>Made for guests who arrive from Instagram and want to request a slot in under a minute.</p>
+            <button><i data-lucide="send"></i>Send request</button>
+          </aside>
+          <div class="availability-board">
+            <div class="board-header">
+              <div><p class="eyebrow">Available this week</p><h3>Pick a time</h3></div>
+              <button class="secondary"><i data-lucide="filter"></i>Filter</button>
+            </div>
+            <div class="day-list">
+              <article><strong>Tuesday</strong><button>9:30 AM</button><button>1:00 PM</button><button>5:30 PM</button></article>
+              <article><strong>Wednesday</strong><button>10:00 AM</button><button>2:30 PM</button></article>
+              <article><strong>Friday</strong><button>11:30 AM</button><button>4:00 PM</button><button>6:00 PM</button></article>
+            </div>
+            <form class="compact-form">
+              <input placeholder="Name" />
+              <input placeholder="Phone or email" />
+              <textarea placeholder="Hair goals, current color, and notes"></textarea>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="concept" id="concept-3">
+        <div class="dashboard">
+          <aside class="sidebar">
+            <h2>Owner Console</h2>
+            <button class="active"><i data-lucide="calendar-days"></i>Schedule</button>
+            <button><i data-lucide="inbox"></i>Requests</button>
+            <button><i data-lucide="list-plus"></i>Services</button>
+            <button><i data-lucide="settings"></i>Settings</button>
+          </aside>
+          <div class="workspace">
+            <div class="board-header">
+              <div><p class="eyebrow">Slot setup</p><h3>May 18-24</h3></div>
+              <button><i data-lucide="plus"></i>Add slots</button>
+            </div>
+            <div class="schedule-grid">
+              <article><span>Mon</span><button>Closed</button></article>
+              <article><span>Tue</span><button>9:00-1:00</button><button>3:00-7:00</button></article>
+              <article><span>Wed</span><button>10:00-4:00</button></article>
+              <article><span>Thu</span><button>Admin day</button></article>
+              <article><span>Fri</span><button>9:00-6:00</button></article>
+            </div>
+            <div class="request-list">
+              <h3>New requests</h3>
+              <p><strong>Maya P.</strong> wants full color on Friday at 4:00 PM <button>Approve</button></p>
+              <p><strong>Jenna R.</strong> asked for a consultation next week <button>Reply</button></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="concept" id="concept-4">
+        <div class="portfolio-hero">
+          <div>
+            <span class="pill">Color, cuts, styling</span>
+            <h2>Luxe Portfolio</h2>
+            <p>Image-led and premium. This one makes the salon work the main attraction, with booking always close by.</p>
+            <button><i data-lucide="sparkles"></i>Start with a consultation</button>
+          </div>
+        </div>
+        <div class="portfolio-grid">
+          <article class="photo-card large"><h3>Dimensional blonding</h3><p>Consultation required</p></article>
+          <article class="photo-card warm-img"><h3>Gloss refresh</h3><p>75-90 min</p></article>
+          <article class="photo-card dark-img"><h3>Event styling</h3><p>From $55</p></article>
+        </div>
+      </section>
+
+      <section class="concept" id="concept-5">
+        <div class="split-home">
+          <div class="family-copy">
+            <p class="eyebrow">Simple, welcoming, local</p>
+            <h2>Family Friendly</h2>
+            <p>Clear services, straightforward requests, and a friendly neighborhood feel for repeat clients and first-time guests.</p>
+            <div class="quick-actions">
+              <button><i data-lucide="user-plus"></i>New guest</button>
+              <button class="secondary"><i data-lucide="repeat"></i>Returning guest</button>
+            </div>
+          </div>
+          <div class="family-panel">
+            <h3>What do you need?</h3>
+            <label><input type="checkbox" checked /> Haircut</label>
+            <label><input type="checkbox" /> Color service</label>
+            <label><input type="checkbox" /> Kids cut</label>
+            <label><input type="checkbox" /> Special occasion</label>
+            <div class="notice">Guests request a time. The owner confirms, declines, or suggests a new slot.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="concept" id="concept-6">
+        <div class="chosen-layout">
+          <section class="chosen-hero">
+            <div class="chosen-copy">
+              <span class="pill">Warm booking + owner control</span>
+              <h2>Top Knot Studios</h2>
+              <p>Use page 1 as the public face, page 5 for simple guest choices, and page 3 as the private owner dashboard for confirming requests and opening time slots.</p>
+              <div class="hero-actions">
+                <button><i data-lucide="calendar-plus"></i>Request appointment</button>
+                <button class="secondary"><i data-lucide="log-in"></i>Owner login</button>
+              </div>
+            </div>
+            <aside class="guest-card">
+              <h3>Guest request</h3>
+              <div class="guest-type">
+                <button class="active"><i data-lucide="user-plus"></i>New guest</button>
+                <button><i data-lucide="repeat"></i>Returning</button>
+              </div>
+              <label>Service
+                <select>
+                  <option>Cut + style, 60 min</option>
+                  <option>Root touch-up, 90 min</option>
+                  <option>Full color consultation</option>
+                </select>
+              </label>
+              <label>Preferred time
+                <select>
+                  <option>Wednesday at 10:00 AM</option>
+                  <option>Friday at 4:00 PM</option>
+                  <option>Next available evening</option>
+                </select>
+              </label>
+              <textarea placeholder="Hair goals, current color, allergies, or timing notes"></textarea>
+            </aside>
+          </section>
+
+          <section class="chosen-body">
+            <div class="guest-flow">
+              <p class="eyebrow">Guest side</p>
+              <h3>Simple request path</h3>
+              <div class="flow-row">
+                <article><i data-lucide="scissors"></i><strong>Choose service</strong><span>Clear service names, duration, and starting price.</span></article>
+                <article><i data-lucide="clock"></i><strong>Pick open slot</strong><span>Guests request owner-created time slots.</span></article>
+                <article><i data-lucide="message-square-check"></i><strong>Wait for confirmation</strong><span>The appointment is not final until approved.</span></article>
+              </div>
+            </div>
+
+            <div class="owner-mini-console">
+              <div class="board-header">
+                <div>
+                  <p class="eyebrow">Owner side</p>
+                  <h3>Today’s console</h3>
+                </div>
+                <button><i data-lucide="plus"></i>Add slots</button>
+              </div>
+              <div class="owner-columns">
+                <article>
+                  <strong>Open slots</strong>
+                  <button>Wed 10:00 AM</button>
+                  <button>Fri 4:00 PM</button>
+                  <button>Sat 11:30 AM</button>
+                </article>
+                <article>
+                  <strong>Requests</strong>
+                  <p>Maya P. wants full color <button>Approve</button></p>
+                  <p>Jenna R. asks for consult <button>Reply</button></p>
+                </article>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
