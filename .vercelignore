@@ -1,0 +1,9 @@
+.codex-remote-attachments
+work
+public/images/studio-originals
+public/images/studio-graded-preview*
+public/images/studio-light-preview*
+public/images/studio-extra-light-preview*
+tmp-*
+*.zip
+*.tar.gz
