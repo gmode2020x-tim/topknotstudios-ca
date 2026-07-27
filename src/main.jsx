@@ -30,12 +30,10 @@ const config = {
     "216 King Street East, Ingersoll Ontario, N5C 1H2",
 };
 
-const emailSubject = encodeURIComponent("Appointment request for Top Knot Studios");
 const emailBody = encodeURIComponent(
   "Hi Top Knot Studios,\n\nI would like to request an appointment.\n\nService:\nPreferred date/time:\nHair goals or notes:\n\nThank you,"
 );
 
-const appointmentRequestHref = `mailto:${config.email}?subject=${emailSubject}&body=${emailBody}`;
 const mapsHref = "https://www.google.com/maps?cid=7959846592753645575";
 
 const productNotes = [
@@ -87,7 +85,26 @@ const stylistBio = {
 };
 
 function bookingHref() {
-  return appointmentRequestHref;
+  return appointmentRequestHref();
+}
+
+function emailReferenceNumber() {
+  if (globalThis.crypto?.getRandomValues) {
+    const values = new Uint32Array(1);
+    globalThis.crypto.getRandomValues(values);
+    return String(values[0] % 1000000).padStart(6, "0");
+  }
+
+  return String(Math.floor(Math.random() * 1000000)).padStart(6, "0");
+}
+
+function appointmentRequestHref() {
+  const subject = encodeURIComponent(`Appointment request for Top Knot Studios - ${emailReferenceNumber()}`);
+  return `mailto:${config.email}?subject=${subject}&body=${emailBody}`;
+}
+
+function refreshBookingHref(event) {
+  event.currentTarget.href = bookingHref();
 }
 
 function phoneHref() {
@@ -277,7 +294,14 @@ function App() {
           <a href="#contact" onClick={closeMenu}>
             Contact
           </a>
-          <a className="button small" href={bookingHref()} onClick={closeMenu}>
+          <a
+            className="button small"
+            href={bookingHref()}
+            onClick={(event) => {
+              refreshBookingHref(event);
+              closeMenu();
+            }}
+          >
             Request appointment
           </a>
         </nav>
@@ -293,7 +317,7 @@ function App() {
               professional Redken colour care.
             </p>
             <div className="hero-actions">
-              <a className="button" href={bookingHref()}>
+              <a className="button" href={bookingHref()} onClick={refreshBookingHref}>
                 <CalendarDays />
                 Request appointment
               </a>
@@ -453,7 +477,7 @@ function App() {
               </li>
             </ul>
             <div className="booking-actions">
-              <a className="button" href={bookingHref()}>
+              <a className="button" href={bookingHref()} onClick={refreshBookingHref}>
                 Request appointment
               </a>
             </div>
@@ -465,7 +489,7 @@ function App() {
               Send an appointment request to {config.email}, or call/text {config.phone}.
               Payments are accepted by e-transfer to {paymentEmail} or by cash.
             </p>
-            <a href={appointmentRequestHref}>Send appointment request</a>
+            <a href={appointmentRequestHref()} onClick={refreshBookingHref}>Send appointment request</a>
           </div>
         </section>
 
@@ -555,7 +579,7 @@ function App() {
             {config.address}
           </a>
         </address>
-        <a className="button small" href={bookingHref()}>
+        <a className="button small" href={bookingHref()} onClick={refreshBookingHref}>
           Request appointment
         </a>
       </footer>
