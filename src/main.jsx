@@ -1,15 +1,18 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import {
+  BarChart3,
   CalendarDays,
   CheckCircle2,
   Clock,
+  Eye,
   LogOut,
   Mail,
   MapPin,
   Menu,
   Phone,
   Plus,
+  RefreshCw,
   Save,
   Scissors,
   ShieldCheck,
@@ -18,6 +21,7 @@ import {
   X,
 } from "lucide-react";
 import { defaultGallery, normalizeGallery, normalizeServices } from "./galleryData.js";
+import { trackAnalytics } from "./analytics.js";
 import "./styles.css";
 
 const config = {
@@ -103,8 +107,9 @@ function appointmentRequestHref() {
   return `mailto:${config.email}?subject=${subject}&body=${emailBody}`;
 }
 
-function refreshBookingHref(event) {
+function refreshBookingHref(event, section = "unknown") {
   event.currentTarget.href = bookingHref();
+  trackAnalytics("appointment_click", { section });
 }
 
 function phoneHref() {
@@ -231,6 +236,8 @@ function App() {
   React.useEffect(() => {
     let ignore = false;
 
+    trackAnalytics("page_view");
+
     fetchJson("/api/gallery")
       .then((data) => {
         if (ignore) return;
@@ -251,7 +258,9 @@ function App() {
   const closeMenu = () => setMenuOpen(false);
   const activeGalleryCategory = galleryCategories.find((category) => category.id === activeGallery) || null;
   const serviceCategories = galleryCategories.filter((category) => category.label);
-  const openGalleryCategory = (categoryId) => {
+  const openGalleryCategory = (categoryId, section = "gallery-tabs") => {
+    const category = galleryCategories.find((item) => item.id === categoryId);
+    trackAnalytics("gallery_view", { category: category?.label || categoryId, section });
     setActiveGallery(categoryId);
     closeMenu();
     window.setTimeout(() => {
@@ -298,7 +307,7 @@ function App() {
             className="button small"
             href={bookingHref()}
             onClick={(event) => {
-              refreshBookingHref(event);
+              refreshBookingHref(event, "navigation");
               closeMenu();
             }}
           >
@@ -317,7 +326,7 @@ function App() {
               professional Redken colour care.
             </p>
             <div className="hero-actions">
-              <a className="button" href={bookingHref()} onClick={refreshBookingHref}>
+              <a className="button" href={bookingHref()} onClick={(event) => refreshBookingHref(event, "hero")}>
                 <CalendarDays />
                 Request appointment
               </a>
@@ -332,7 +341,7 @@ function App() {
                 {config.address}
               </span>
               {config.phone ? (
-                <a href={phoneHref()}>
+                <a href={phoneHref()} onClick={() => trackAnalytics("phone_click", { section: "hero" })}>
                   <Phone />
                   {config.phone}
                 </a>
@@ -356,7 +365,7 @@ function App() {
                 className="service-card"
                 type="button"
                 key={category.id}
-                onClick={() => openGalleryCategory(category.id)}
+                onClick={() => openGalleryCategory(category.id, "services")}
               >
                 <img src={categoryServiceImage(category)} alt="" loading="lazy" />
                 <div>
@@ -477,7 +486,7 @@ function App() {
               </li>
             </ul>
             <div className="booking-actions">
-              <a className="button" href={bookingHref()} onClick={refreshBookingHref}>
+              <a className="button" href={bookingHref()} onClick={(event) => refreshBookingHref(event, "booking-section")}>
                 Request appointment
               </a>
             </div>
@@ -489,7 +498,7 @@ function App() {
               Send an appointment request to {config.email}, or call/text {config.phone}.
               Payments are accepted by e-transfer to {paymentEmail} or by cash.
             </p>
-            <a href={appointmentRequestHref()} onClick={refreshBookingHref}>Send appointment request</a>
+            <a href={appointmentRequestHref()} onClick={(event) => refreshBookingHref(event, "booking-panel")}>Send appointment request</a>
           </div>
         </section>
 
@@ -511,7 +520,7 @@ function App() {
                 aria-selected={category.id === activeGalleryCategory?.id}
                 aria-controls="style-gallery-panel"
                 key={category.id}
-                onClick={() => openGalleryCategory(category.id)}
+                onClick={() => openGalleryCategory(category.id, "gallery-tabs")}
               >
                 {category.label}
               </button>
@@ -535,7 +544,13 @@ function App() {
             </div>
           )}
           {config.instagramUrl ? (
-            <a className="button secondary centered" href={config.instagramUrl} target="_blank" rel="noreferrer">
+            <a
+              className="button secondary centered"
+              href={config.instagramUrl}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => trackAnalytics("instagram_click", { section: "gallery" })}
+            >
               View Instagram
             </a>
           ) : null}
@@ -565,7 +580,7 @@ function App() {
         <p>A private hair studio in Ingersoll, Ontario offering personal, one-on-one hair services.</p>
         <address>
           {config.phone ? (
-            <a href={phoneHref()}>
+            <a href={phoneHref()} onClick={() => trackAnalytics("phone_click", { section: "footer" })}>
               <Phone />
               {config.phone}
             </a>
@@ -574,16 +589,151 @@ function App() {
             <Mail />
             {config.email}
           </a>
-          <a href={mapsHref} target="_blank" rel="noreferrer">
+          <a href={mapsHref} target="_blank" rel="noreferrer" onClick={() => trackAnalytics("maps_click", { section: "footer" })}>
             <MapPin />
             {config.address}
           </a>
         </address>
-        <a className="button small" href={bookingHref()} onClick={refreshBookingHref}>
+        <a className="button small" href={bookingHref()} onClick={(event) => refreshBookingHref(event, "footer")}>
           Request appointment
         </a>
       </footer>
     </>
+  );
+}
+
+function formatDashboardDate(date) {
+  return new Intl.DateTimeFormat("en-CA", { month: "short", day: "numeric", timeZone: "UTC" }).format(
+    new Date(`${date}T12:00:00Z`),
+  );
+}
+
+function AnalyticsMetric({ icon: Icon, label, value, note }) {
+  return (
+    <article className="analytics-metric">
+      <span className="analytics-metric-icon"><Icon /></span>
+      <div>
+        <small>{label}</small>
+        <strong>{value}</strong>
+        <p>{note}</p>
+      </div>
+    </article>
+  );
+}
+
+function AnalyticsRanking({ title, items, emptyText }) {
+  const maximum = Math.max(...items.map((item) => item.count), 1);
+  return (
+    <section className="analytics-ranking">
+      <h3>{title}</h3>
+      {items.length ? (
+        <ol>
+          {items.map((item) => (
+            <li key={item.label}>
+              <div>
+                <span>{item.label}</span>
+                <strong>{item.count}</strong>
+              </div>
+              <span className="analytics-rank-track" aria-hidden="true">
+                <span style={{ width: `${(item.count / maximum) * 100}%` }} />
+              </span>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p className="admin-empty">{emptyText}</p>
+      )}
+    </section>
+  );
+}
+
+function AnalyticsDashboard({ data, days, loading, error, onDaysChange, onRefresh }) {
+  const maximumDailyViews = Math.max(...(data?.daily || []).map((day) => day.pageViews), 1);
+
+  return (
+    <section className="analytics-dashboard" aria-labelledby="analytics-title">
+      <div className="analytics-heading">
+        <div>
+          <span>Private report</span>
+          <h2 id="analytics-title">Website traffic</h2>
+          <p>Anonymous page views and high-intent actions. No visitor profiles, cookies, or form content.</p>
+        </div>
+        <div className="analytics-controls">
+          <div className="analytics-range" aria-label="Analytics date range">
+            {[7, 30, 90].map((option) => (
+              <button
+                className={option === days ? "active" : ""}
+                type="button"
+                key={option}
+                onClick={() => onDaysChange(option)}
+              >
+                {option} days
+              </button>
+            ))}
+          </div>
+          <button className="button secondary" type="button" onClick={onRefresh} disabled={loading}>
+            <RefreshCw />
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      {error ? <p className="admin-error">{error}</p> : null}
+      {loading && !data ? <p className="admin-status">Loading traffic report.</p> : null}
+
+      {data ? (
+        <>
+          <div className="analytics-metrics">
+            <AnalyticsMetric icon={Eye} label="Page views" value={data.totals.pageViews} note={`${days}-day total`} />
+            <AnalyticsMetric
+              icon={Mail}
+              label="Appointment emails"
+              value={data.totals.appointmentClicks}
+              note="Email request links opened"
+            />
+            <AnalyticsMetric icon={Phone} label="Phone actions" value={data.totals.phoneClicks} note="Call or text links opened" />
+            <AnalyticsMetric icon={MapPin} label="Map opens" value={data.totals.mapsClicks} note="Directions interest" />
+            <AnalyticsMetric
+              icon={BarChart3}
+              label="Appointment action rate"
+              value={`${data.appointmentActionRate}%`}
+              note="Email and phone actions per page view"
+            />
+          </div>
+
+          <section className="analytics-chart-card">
+            <div className="analytics-card-heading">
+              <div>
+                <h3>Daily page views</h3>
+                <p>{data.range.from} to {data.range.to}</p>
+              </div>
+              <span>{data.eventCount} measured actions</span>
+            </div>
+            <div className="analytics-chart" role="img" aria-label={`Daily page views for the last ${days} days`}>
+              {data.daily.map((day, index) => (
+                <div className="analytics-day" key={day.date} title={`${formatDashboardDate(day.date)}: ${day.pageViews} page views`}>
+                  <span
+                    className={day.pageViews ? "analytics-bar active" : "analytics-bar"}
+                    style={{ height: `${Math.max((day.pageViews / maximumDailyViews) * 100, day.pageViews ? 8 : 2)}%` }}
+                  />
+                  {(days === 7 || index === 0 || index === data.daily.length - 1) ? <small>{formatDashboardDate(day.date)}</small> : null}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <div className="analytics-rankings-grid">
+            <AnalyticsRanking title="Top referrers" items={data.topReferrers} emptyText="No page-view referrers yet." />
+            <AnalyticsRanking title="Gallery interest" items={data.galleryInterest} emptyText="No gallery categories opened yet." />
+            <AnalyticsRanking title="Appointment sources" items={data.appointmentSources} emptyText="No appointment links opened yet." />
+          </div>
+
+          {data.truncated ? (
+            <p className="admin-warning">This report reached the 5,000-event display limit and may be sampled.</p>
+          ) : null}
+        </>
+      ) : null}
+    </section>
   );
 }
 
@@ -597,6 +747,11 @@ function AdminApp() {
   const [status, setStatus] = React.useState("Loading gallery.");
   const [error, setError] = React.useState("");
   const [storageConfigured, setStorageConfigured] = React.useState(false);
+  const [activeAdminView, setActiveAdminView] = React.useState("analytics");
+  const [analyticsDays, setAnalyticsDays] = React.useState(30);
+  const [analyticsData, setAnalyticsData] = React.useState(null);
+  const [analyticsLoading, setAnalyticsLoading] = React.useState(false);
+  const [analyticsError, setAnalyticsError] = React.useState("");
 
   const selected = categories.find((category) => category.id === selectedCategory) || categories[0] || defaultGallery[0];
 
@@ -609,14 +764,32 @@ function AdminApp() {
     setAuthenticated(Boolean(data.authenticated));
     setStorageConfigured(Boolean(data.storageConfigured));
     setStatus(data.usingFallback ? "Loaded fallback gallery. Configure Blob storage to save changes." : "Gallery loaded.");
+    return Boolean(data.authenticated);
+  }, []);
+
+  const loadAnalytics = React.useCallback(async (days = 30) => {
+    setAnalyticsLoading(true);
+    setAnalyticsError("");
+    try {
+      const data = await fetchJson(`/api/analytics?days=${days}`);
+      setAnalyticsData(data);
+    } catch (requestError) {
+      setAnalyticsError(requestError.message);
+    } finally {
+      setAnalyticsLoading(false);
+    }
   }, []);
 
   React.useEffect(() => {
-    loadGallery().catch((requestError) => {
-      setError(requestError.message);
-      setStatus("Gallery API is unavailable.");
-    });
-  }, [loadGallery]);
+    loadGallery()
+      .then((isAuthenticated) => {
+        if (isAuthenticated) loadAnalytics(30);
+      })
+      .catch((requestError) => {
+        setError(requestError.message);
+        setStatus("Gallery API is unavailable.");
+      });
+  }, [loadAnalytics, loadGallery]);
 
   async function login(event) {
     event.preventDefault();
@@ -629,7 +802,8 @@ function AdminApp() {
       });
       setUsername("");
       setPassword("");
-      await loadGallery();
+      const isAuthenticated = await loadGallery();
+      if (isAuthenticated) await loadAnalytics(analyticsDays);
       setStatus("Signed in.");
     } catch (requestError) {
       setError(requestError.message);
@@ -640,7 +814,14 @@ function AdminApp() {
   async function logout() {
     await fetchJson("/api/admin/logout", { method: "POST", body: "{}" }).catch(() => {});
     setAuthenticated(false);
+    setAnalyticsData(null);
+    setActiveAdminView("analytics");
     setStatus("Signed out.");
+  }
+
+  function changeAnalyticsDays(days) {
+    setAnalyticsDays(days);
+    loadAnalytics(days);
   }
 
   async function save(nextCategories = categories, nextServices = services) {
@@ -756,8 +937,8 @@ function AdminApp() {
       <section className="admin-topbar">
         <div>
           <a href="/" className="admin-brand">Top Knot Studios</a>
-          <h1>Gallery Admin</h1>
-          <p>Manage categories, move images, upload normalized salon-style photos, and remove old images.</p>
+          <h1>Site administration</h1>
+          <p>Review website traffic, update the price list, and manage gallery content.</p>
         </div>
         {authenticated ? (
           <button className="button secondary" type="button" onClick={logout}>
@@ -783,6 +964,36 @@ function AdminApp() {
           {error ? <p className="admin-error">{error}</p> : null}
         </form>
       ) : (
+        <>
+          <nav className="admin-tabs" aria-label="Administrator sections">
+            <button
+              className={activeAdminView === "analytics" ? "active" : ""}
+              type="button"
+              onClick={() => setActiveAdminView("analytics")}
+            >
+              <BarChart3 />
+              Traffic dashboard
+            </button>
+            <button
+              className={activeAdminView === "content" ? "active" : ""}
+              type="button"
+              onClick={() => setActiveAdminView("content")}
+            >
+              <Scissors />
+              Price list & gallery
+            </button>
+          </nav>
+
+          {activeAdminView === "analytics" ? (
+            <AnalyticsDashboard
+              data={analyticsData}
+              days={analyticsDays}
+              loading={analyticsLoading}
+              error={analyticsError}
+              onDaysChange={changeAnalyticsDays}
+              onRefresh={() => loadAnalytics(analyticsDays)}
+            />
+          ) : (
         <section className="admin-grid">
           <aside className="admin-sidebar">
             <div className="admin-actions">
@@ -893,6 +1104,8 @@ function AdminApp() {
             </div>
           </section>
         </section>
+          )}
+        </>
       )}
     </main>
   );

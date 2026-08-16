@@ -1,4 +1,4 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 
 const COOKIE_NAME = "topknot_admin";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 12;
@@ -12,10 +12,9 @@ function sign(value) {
 }
 
 function safeEqual(left, right) {
-  const leftBuffer = Buffer.from(String(left));
-  const rightBuffer = Buffer.from(String(right));
-
-  return leftBuffer.length === rightBuffer.length && timingSafeEqual(leftBuffer, rightBuffer);
+  const leftBuffer = createHash("sha256").update(String(left)).digest();
+  const rightBuffer = createHash("sha256").update(String(right)).digest();
+  return timingSafeEqual(leftBuffer, rightBuffer);
 }
 
 export function hasAdminConfig() {

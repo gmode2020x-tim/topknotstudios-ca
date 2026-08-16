@@ -7,6 +7,7 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "build:sites": "vite build && node scripts/prepare-sites-build.mjs",
+    "test": "node scripts/test-analytics.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "deploy": "npx --yes vercel@56.3.1 --prod",
     "deploy:preview": "npx --yes vercel@56.3.1"

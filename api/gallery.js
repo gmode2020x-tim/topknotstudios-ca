@@ -162,6 +162,7 @@ export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
       const manifest = await readManifest();
+      res.setHeader("Cache-Control", "private, no-store");
       res.status(200).json({
         ...manifest,
         authenticated: isAuthenticated(req),
